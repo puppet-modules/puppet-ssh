@@ -2,8 +2,9 @@
 # Copyright (C) 2007 David Schmitt <david@schmitt.edv-bus.at>
 # See LICENSE for the full license granted to you.
 
+class ssh {
 
-class ssh_base {
+class common {
 	file {
 		"/etc/ssh":
 			ensure => directory, mode => 0755;
@@ -14,7 +15,7 @@ class ssh_base {
 	}
 }
 
-class ssh_client inherits ssh_base {
+class client inherits common {
 	package { "openssh-client":
 		ensure => installed,
 		before => File["/etc/ssh"]
@@ -24,10 +25,7 @@ class ssh_client inherits ssh_base {
 	Sshkey <<||>>
 }
 
-class sshd inherits ssh_base {
-
-	# every server is a client too
-	include ssh_client
+class server inherits client {
 
 	package { "openssh-server": ensure => installed }
 
@@ -66,3 +64,4 @@ class sshd inherits ssh_base {
 
 }
 
+}
