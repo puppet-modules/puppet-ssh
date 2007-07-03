@@ -43,7 +43,12 @@ class server inherits client {
 		default: {
 			#@@sshkey { "$hostname.$domain": type => ssh-dss, key => $sshdsakey_key, ensure => present, }
 			debug ( "Storing rsa key for $hostname.$domain" )
-			@@sshkey { "$hostname.$domain": type => ssh-rsa, key => $sshrsakey_key, ensure => present }
+			@@sshkey { "$hostname.$domain":
+				type => ssh-rsa,
+				key => $sshrsakey_key,
+				ensure => present,
+				require => Package["openssh-client"],
+			}
 		}
 	}
 
