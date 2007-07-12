@@ -7,7 +7,9 @@ class ssh {
 class common {
 	file {
 		"/etc/ssh":
-			ensure => directory, mode => 0755;
+			ensure => directory,
+			mode => 0755, owner => root, group => root,
+			;
 		"$rubysitedir/facter/sshkeys.rb":
 			#content => file("$modulesdir/facter/sshkeys.rb"),
 			source => "puppet://$servername/ssh/facter/sshkeys.rb",
@@ -18,7 +20,7 @@ class common {
 class client inherits common {
 	package { "openssh-client":
 		ensure => installed,
-		before => File["/etc/ssh"]
+		require => File["/etc/ssh"]
 	}
 	
 	# Now collect all server keys
