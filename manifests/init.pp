@@ -15,12 +15,21 @@ class common {
 			source => "puppet://$servername/ssh/facter/sshkeys.rb",
 			mode => 0644;
 	}
+	group { ssh:
+		gid => 204,
+		allowdupe => false,
+	}
 }
 
 class client inherits common {
 	package { "openssh-client":
 		ensure => installed,
-		require => File["/etc/ssh"]
+		require => [ File["/etc/ssh"], Group[ssh] ],
+	}
+
+	file { "/usr/bin/ssh-agent":
+		group => ssh,
+		require => Package[openssh-client],
 	}
 	
 	# Now collect all server keys
@@ -29,7 +38,18 @@ class client inherits common {
 
 class server inherits client {
 
-	package { "openssh-server": ensure => installed }
+	package { "openssh-server":
+		ensure => installed,
+		require =>  [ File["/etc/ssh"], User[sshd] ],
+	}
+
+	user { sshd:
+		uid => 204,
+		gid => 65534,
+		home => "/var/run/sshd",
+		shell => "/usr/sbin/nologin",
+		allowdupe => false,
+	}
 
 	service { ssh:
 		ensure => running,
