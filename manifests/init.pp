@@ -55,6 +55,7 @@ class server inherits client {
 		ensure => running,
 		pattern => "sshd",
 		require => Package["openssh-server"],
+		subscribe => [ User[sshd], Group["ssh"] ]
 	}
 
 	# Now add the key, if we've got one
