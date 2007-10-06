@@ -10,10 +10,6 @@ class common {
 			ensure => directory,
 			mode => 0755, owner => root, group => root,
 			;
-		"$rubysitedir/facter/sshkeys.rb":
-			#content => file("$modulesdir/facter/sshkeys.rb"),
-			source => "puppet://$servername/ssh/facter/sshkeys.rb",
-			mode => 0644;
 	}
 	group { ssh:
 		gid => 204,
