@@ -2,56 +2,59 @@
 # Copyright (C) 2007 David Schmitt <david@schmitt.edv-bus.at>
 # See LICENSE for the full license granted to you.
 
-class ssh {
-
-class common {
+class ssh::common {
 	file {
 		"/etc/ssh":
 			ensure => directory,
 			mode => 0755, owner => root, group => root,
-			;
 	}
-	group { ssh:
-		gid => 204,
-		allowdupe => false,
+	group {
+		ssh:
+			gid => 204,
+			allowdupe => false,
 	}
 }
 
-class client inherits common {
-	package { "openssh-client":
-		ensure => installed,
-		require => [ File["/etc/ssh"], Group[ssh] ],
+class ssh::client inherits ssh::common {
+	package {
+		"openssh-client":
+			ensure => installed,
+			require => [ File["/etc/ssh"], Group[ssh] ],
 	}
 
-	file { "/usr/bin/ssh-agent":
-		group => ssh,
-		require => Package[openssh-client],
+	# this is needed because the gid might have changed
+	file {
+		"/usr/bin/ssh-agent":
+			group => ssh,
+			require => Package[openssh-client],
 	}
 	
 	# Now collect all server keys
 	Sshkey <<||>>
 }
 
-class server inherits client {
+class ssh::server inherits ssh::client {
 
-	package { "openssh-server":
-		ensure => installed,
-		require =>  [ File["/etc/ssh"], User[sshd] ],
+	package {
+		"openssh-server":
+			ensure => installed,
+			require => [ File["/etc/ssh"], User[sshd] ],
 	}
 
-	user { sshd:
-		uid => 204,
-		gid => 65534,
-		home => "/var/run/sshd",
-		shell => "/usr/sbin/nologin",
-		allowdupe => false,
+	user {
+		sshd:
+			uid => 204, gid => 65534,
+			home => "/var/run/sshd",
+			shell => "/usr/sbin/nologin",
+			allowdupe => false,
 	}
 
-	service { ssh:
-		ensure => running,
-		pattern => "sshd",
-		require => Package["openssh-server"],
-		subscribe => [ User[sshd], Group["ssh"] ]
+	service {
+		ssh:
+			ensure => running,
+			pattern => "sshd",
+			require => Package["openssh-server"],
+			subscribe => [ User[sshd], Group["ssh"] ]
 	}
 
 	# Now add the key, if we've got one
@@ -80,15 +83,15 @@ class server inherits client {
 
 	nagios2::service{ "ssh_port_${real_ssh_port}": check_command => "ssh_port!$real_ssh_port" }
 
-	define config($ensure) {
-		replace { "sshd_config_$name":
+}
+
+define ssh::server::config($ensure) {
+	replace {
+		"sshd_config_$name":
 			file => "/etc/ssh/sshd_config",
 			pattern => "^$name +(?!\\Q$ensure\\E).*",
 			replacement => "$name $ensure # set by puppet",
 			notify => Service[ssh],
-		}
 	}
-
 }
 
-}
