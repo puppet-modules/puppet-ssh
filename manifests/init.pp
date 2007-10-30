@@ -76,8 +76,8 @@ class ssh::server inherits ssh::client {
 
 	$real_ssh_port = $ssh_port ? { '' => 22, default => $ssh_port }
 
-	err("User requested ssh on $fqdn with port '${ssh_port}'" )
-	err("Configuring ssh on $fqdn with port '${real_ssh_port}'" )
+	debug("User requested ssh on $fqdn with port '${ssh_port}'" )
+	notice("Configuring ssh on $fqdn with port '${real_ssh_port}'" )
 
 	config{ "Port": ensure => $real_ssh_port }
 
