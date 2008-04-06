@@ -2,7 +2,9 @@ Built-for: Debian
 Depends: define:replace class:nagios2 option:storeconfigs
 
 Classes:
-	ssh_client: prepare a host for ssh usage. collects all managed ssh host keys.
-	sshd: installs a openssh server listening on port $ssh_port (default: 22)
+	ssh::client
+		prepare a host for ssh usage. collects all managed ssh host keys.
+	ssh::server
+		installs a openssh server listening on port $ssh_port (default: 22)
 
-This module contains and installs a custom fact for reading the ssh key
+This module contains a custom fact for reading the ssh key, use pluginsync
