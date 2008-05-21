@@ -26,7 +26,9 @@ class ssh::client inherits ssh::common {
 	file {
 		"/usr/bin/ssh-agent":
 			group => ssh,
-			require => Package[openssh-client],
+			require => Package[openssh-client];
+		"/etc/ssh/ssh_known_hosts":
+			mode => 0644, owner => root, group => 0;
 	}
 	
 	# Now collect all server keys
