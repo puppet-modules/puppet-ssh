@@ -92,7 +92,7 @@ define ssh::server::config($ensure) {
 		"sshd_config_$name":
 			file => "/etc/ssh/sshd_config",
 			pattern => "^$name +(?!\\Q$ensure\\E).*",
-			replacement => "$name $ensure # set by puppet",
+			replacement => "$name $ensure",
 			notify => Service[ssh],
 	}
 }
