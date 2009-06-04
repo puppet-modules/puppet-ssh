@@ -83,7 +83,7 @@ class ssh::server inherits ssh::client {
 
 	config{ "Port": ensure => $real_ssh_port }
 
-	nagios2::service{ "ssh_port_${real_ssh_port}": check_command => "ssh_port!$real_ssh_port" }
+	nagios::service{ "ssh_port_${real_ssh_port}": check_command => "ssh_port!$real_ssh_port" }
 
 }
 

@@ -1,5 +1,5 @@
 Built-for: Debian
-Depends: define:replace class:nagios2 option:storeconfigs
+Depends: define:replace class:nagios option:storeconfigs
 
 Classes:
 	ssh::client
